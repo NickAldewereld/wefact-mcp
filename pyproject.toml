@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wefact-mcp"
+version = "0.1.0"
+description = "MCP server for WeFact — let Claude (Desktop, Code, Cursor) read and modify your WeFact administration via the v2 API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE", "LICENSE-COMMERCIAL.md"]
+authors = [
+    { name = "Nick Aldewereld", email = "nick@easeo.nl" },
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "wefact",
+    "invoicing",
+    "boekhouding",
+    "factuur",
+    "claude",
+    "anthropic",
+    "ai",
+    "automation",
+    "netherlands",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Natural Language :: Dutch",
+    "Natural Language :: English",
+    "Typing :: Typed",
+]
+dependencies = [
+    "mcp>=1.0",
+    "httpx>=0.25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "build>=1.0",
+    "twine>=5.0",
+]
+
+[project.scripts]
+wefact-mcp = "wefact_mcp.server:run"
+
+[project.urls]
+Homepage = "https://easeo.nl/diensten/wefact-mcp"
+Documentation = "https://easeo.nl/diensten/wefact-mcp"
+Repository = "https://github.com/NickAldewereld/wefact-mcp"
+Issues = "https://github.com/NickAldewereld/wefact-mcp/issues"
+"Buy a commercial license" = "https://easeo.nl/diensten/wefact-mcp"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["wefact_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/wefact_mcp",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/LICENSE-COMMERCIAL.md",
+    "/pyproject.toml",
+]
+exclude = [
+    "*.zip",
+    ".venv",
+    "__pycache__",
+    "*.pyc",
+]
