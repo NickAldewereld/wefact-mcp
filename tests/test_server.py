@@ -204,7 +204,7 @@ async def test_download_attachment_pdf_returns_images(endpoint: str) -> None:
             "Filename": "bon.pdf", "Base64": pdf_b64, "MIME": "application/pdf"}},
     )
     out = await _unwrap(server.download_creditinvoice_attachment)(
-        attachment_identifier=7, creditinvoice_identifier=42)
+        attachment_identifier=7, credit_invoice_identifier=42)
     assert isinstance(out, list) and len(out) >= 1
     assert isinstance(out[0], Image)
 
@@ -218,7 +218,7 @@ async def test_download_attachment_image_passthrough(endpoint: str) -> None:
             "Filename": "foto.png", "Base64": base64.b64encode(png).decode(), "MIME": "image/png"}},
     )
     out = await _unwrap(server.download_creditinvoice_attachment)(
-        attachment_identifier=8, creditinvoice_identifier=42)
+        attachment_identifier=8, credit_invoice_identifier=42)
     assert isinstance(out[0], Image)
 
 
@@ -228,7 +228,7 @@ async def test_download_attachment_sends_correct_params(endpoint: str) -> None:
     route = respx.post(endpoint).respond(
         200, json={"status": "success", "attachment": {"Filename": "f.png", "Base64": png, "MIME": "image/png"}})
     await _unwrap(server.download_creditinvoice_attachment)(
-        attachment_identifier=7, creditinvoice_code="CI42")
+        attachment_identifier=7, credit_invoice_code="CI42")
     sent = json.loads(route.calls.last.request.content)
     assert sent["controller"] == "attachment"
     assert sent["action"] == "download"
@@ -243,12 +243,12 @@ async def test_download_attachment_requires_attachment_identifier_or_filename(
 ) -> None:
     with pytest.raises(ValueError):
         await _unwrap(server.download_creditinvoice_attachment)(
-            creditinvoice_identifier=42
+            credit_invoice_identifier=42
         )
 
 
 @respx.mock
-async def test_download_attachment_requires_creditinvoice_identifier_or_code(
+async def test_download_attachment_requires_credit_invoice_identifier_or_code(
     endpoint: str,
 ) -> None:
     with pytest.raises(ValueError):

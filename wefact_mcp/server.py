@@ -498,20 +498,20 @@ async def get_credit_invoice(
 @mcp.tool()
 async def list_creditinvoice_attachments(
     identifier: int | None = None,
-    creditinvoice_code: str | None = None,
+    credit_invoice_code: str | None = None,
 ) -> str:
     """List the attachments (receipt files) on a credit invoice (purchase/expense).
 
     Returns each attachment's Identifier and Filename so you can then call
     download_creditinvoice_attachment to read the actual file.
     """
-    if identifier is None and creditinvoice_code is None:
-        return _result({"status": "error", "errors": ["Provide identifier or creditinvoice_code."]})
+    if identifier is None and credit_invoice_code is None:
+        return _result({"status": "error", "errors": ["Provide identifier or credit_invoice_code."]})
     params: dict[str, Any] = {}
     if identifier is not None:
         params["Identifier"] = identifier
-    if creditinvoice_code is not None:
-        params["CreditInvoiceCode"] = creditinvoice_code
+    if credit_invoice_code is not None:
+        params["CreditInvoiceCode"] = credit_invoice_code
     try:
         data = await _get_client().request("creditinvoice", "show", params)
     except WeFactError as e:
@@ -527,8 +527,8 @@ async def list_creditinvoice_attachments(
 async def download_creditinvoice_attachment(
     attachment_identifier: int | None = None,
     filename: str | None = None,
-    creditinvoice_identifier: int | None = None,
-    creditinvoice_code: str | None = None,
+    credit_invoice_identifier: int | None = None,
+    credit_invoice_code: str | None = None,
 ) -> Any:
     """Download a credit-invoice attachment (receipt) and return it as image(s)
     you can read with vision. PDFs are rendered to one image per page.
@@ -539,18 +539,18 @@ async def download_creditinvoice_attachment(
     """
     if attachment_identifier is None and filename is None:
         raise ValueError("Provide attachment_identifier or filename.")
-    if creditinvoice_identifier is None and creditinvoice_code is None:
-        raise ValueError("Provide creditinvoice_identifier or creditinvoice_code.")
+    if credit_invoice_identifier is None and credit_invoice_code is None:
+        raise ValueError("Provide credit_invoice_identifier or credit_invoice_code.")
 
     params: dict[str, Any] = {"Type": "creditinvoice"}
     if attachment_identifier is not None:
         params["Identifier"] = attachment_identifier
     if filename is not None:
         params["Filename"] = filename
-    if creditinvoice_identifier is not None:
-        params["ReferenceIdentifier"] = creditinvoice_identifier
-    if creditinvoice_code is not None:
-        params["CreditInvoiceCode"] = creditinvoice_code
+    if credit_invoice_identifier is not None:
+        params["ReferenceIdentifier"] = credit_invoice_identifier
+    if credit_invoice_code is not None:
+        params["CreditInvoiceCode"] = credit_invoice_code
 
     data = await _get_client().request("attachment", "download", params)
     att = data.get("attachment", data)
@@ -567,7 +567,7 @@ async def download_creditinvoice_attachment(
 @mcp.tool()
 async def update_credit_invoice(
     identifier: int | None = None,
-    creditinvoice_code: str | None = None,
+    credit_invoice_code: str | None = None,
     fields: dict[str, Any] | None = None,
 ) -> str:
     """Write corrected fields back to a credit invoice (purchase/expense).
@@ -576,15 +576,15 @@ async def update_credit_invoice(
     write financial data back automatically. Field names are WeFact field
     names (see developer.wefact.com/creditinvoice).
     """
-    if identifier is None and creditinvoice_code is None:
-        return _result({"status": "error", "errors": ["Provide identifier or creditinvoice_code."]})
+    if identifier is None and credit_invoice_code is None:
+        return _result({"status": "error", "errors": ["Provide identifier or credit_invoice_code."]})
     if not fields:
         return _result({"status": "error", "errors": ["Provide fields to update."]})
     params: dict[str, Any] = dict(fields)
     if identifier is not None:
         params["Identifier"] = identifier
-    if creditinvoice_code is not None:
-        params["CreditInvoiceCode"] = creditinvoice_code
+    if credit_invoice_code is not None:
+        params["CreditInvoiceCode"] = credit_invoice_code
     try:
         data = await _get_client().request("creditinvoice", "edit", params)
     except WeFactError as e:
