@@ -23,13 +23,15 @@ Design notes:
 
 from __future__ import annotations
 
+import base64
 import json
 import logging
 from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
 
+from .attachments import attachment_to_images
 from .client import WeFactClient, WeFactError
 
 logger = logging.getLogger("wefact-mcp")
@@ -513,6 +515,47 @@ async def list_creditinvoice_attachments(
     ci = data.get("creditinvoice", data)
     attachments = ci.get("Attachments", []) or []
     return _result({"status": "success", "totalresults": len(attachments), "attachments": attachments})
+
+
+@mcp.tool()
+async def download_creditinvoice_attachment(
+    attachment_identifier: int | None = None,
+    filename: str | None = None,
+    creditinvoice_identifier: int | None = None,
+    creditinvoice_code: str | None = None,
+) -> Any:
+    """Download a credit-invoice attachment (receipt) and return it as image(s)
+    you can read with vision. PDFs are rendered to one image per page.
+
+    Use this to read the actual receipt when WeFact's own field extraction is
+    incomplete: read the image, extract the missing fields, show them to the
+    accountant for approval, then write them back with update_credit_invoice.
+    """
+    if attachment_identifier is None and filename is None:
+        raise ValueError("Provide attachment_identifier or filename.")
+    if creditinvoice_identifier is None and creditinvoice_code is None:
+        raise ValueError("Provide creditinvoice_identifier or creditinvoice_code.")
+
+    params: dict[str, Any] = {"Type": "creditinvoice"}
+    if attachment_identifier is not None:
+        params["Identifier"] = attachment_identifier
+    if filename is not None:
+        params["Filename"] = filename
+    if creditinvoice_identifier is not None:
+        params["ReferenceIdentifier"] = creditinvoice_identifier
+    if creditinvoice_code is not None:
+        params["CreditInvoiceCode"] = creditinvoice_code
+
+    data = await _get_client().request("attachment", "download", params)
+    att = data.get("attachment", data)
+    b64 = att.get("Base64") or att.get("base64") or ""
+    mime = att.get("MIME") or att.get("MimeType") or att.get("ContentType") or ""
+    if not b64:
+        raise ValueError("WeFact returned no file content for this attachment.")
+
+    raw = base64.b64decode(b64)
+    images = attachment_to_images(raw, mime)  # raises ValueError on unsupported type
+    return [Image(data=img, format=fmt) for img, fmt in images]
 
 
 # --------------------------------------------------------------------------
