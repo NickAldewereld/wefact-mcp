@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-07-14
+
+### Added
+
+- `list_creditinvoice_attachments` — list the receipt attachments on a
+  purchase invoice (credit invoice).
+- `download_creditinvoice_attachment` — download an attachment and
+  return it as vision-readable image(s); PDFs are rendered to one PNG
+  per page.
+- `update_credit_invoice` — write corrected fields back to a credit
+  invoice, intended for use only after human approval of AI-extracted
+  values.
+- PyMuPDF dependency (`pymupdf>=1.24`) for PDF-to-image rendering.
+
 ## [0.1.0] — 2026-05-01
 
 Initial public release.

@@ -59,7 +59,11 @@ mcp = FastMCP(
         "Tools for reading and modifying a WeFact administration via the v2 API. "
         "Use `wefact_request` for any endpoint not covered by a dedicated tool. "
         "All tools return parsed JSON from WeFact; errors are raised with the "
-        "messages WeFact returned."
+        "messages WeFact returned. "
+        "Voor onkosten/inkoop met een matige veld-extractie: gebruik "
+        "list_creditinvoice_attachments + download_creditinvoice_attachment om de bon "
+        "met vision te lezen, toon de accountant een voorstel, en schrijf pas na "
+        "goedkeuring terug met update_credit_invoice."
     ),
     lifespan=_lifespan,
 )
@@ -517,6 +521,8 @@ async def list_creditinvoice_attachments(
     return _result({"status": "success", "totalresults": len(attachments), "attachments": attachments})
 
 
+# Return type is Any (not list[Image]) because FastMCP/pydantic cannot build
+# an output schema for Image and would crash at tool registration.
 @mcp.tool()
 async def download_creditinvoice_attachment(
     attachment_identifier: int | None = None,

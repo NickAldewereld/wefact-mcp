@@ -238,6 +238,26 @@ async def test_download_attachment_sends_correct_params(endpoint: str) -> None:
 
 
 @respx.mock
+async def test_download_attachment_requires_attachment_identifier_or_filename(
+    endpoint: str,
+) -> None:
+    with pytest.raises(ValueError):
+        await _unwrap(server.download_creditinvoice_attachment)(
+            creditinvoice_identifier=42
+        )
+
+
+@respx.mock
+async def test_download_attachment_requires_creditinvoice_identifier_or_code(
+    endpoint: str,
+) -> None:
+    with pytest.raises(ValueError):
+        await _unwrap(server.download_creditinvoice_attachment)(
+            attachment_identifier=7
+        )
+
+
+@respx.mock
 async def test_update_credit_invoice_sends_edit(endpoint: str) -> None:
     route = respx.post(endpoint).respond(200, json={"status": "success", "creditinvoice": {"Identifier": "42"}})
     out = await _unwrap(server.update_credit_invoice)(
