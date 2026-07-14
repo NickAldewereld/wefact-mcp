@@ -489,6 +489,32 @@ async def get_credit_invoice(
     return _result(data)
 
 
+@mcp.tool()
+async def list_creditinvoice_attachments(
+    identifier: int | None = None,
+    creditinvoice_code: str | None = None,
+) -> str:
+    """List the attachments (receipt files) on a credit invoice (purchase/expense).
+
+    Returns each attachment's Identifier and Filename so you can then call
+    download_creditinvoice_attachment to read the actual file.
+    """
+    if identifier is None and creditinvoice_code is None:
+        return _result({"status": "error", "errors": ["Provide identifier or creditinvoice_code."]})
+    params: dict[str, Any] = {}
+    if identifier is not None:
+        params["Identifier"] = identifier
+    if creditinvoice_code is not None:
+        params["CreditInvoiceCode"] = creditinvoice_code
+    try:
+        data = await _get_client().request("creditinvoice", "show", params)
+    except WeFactError as e:
+        return _result({"status": "error", "errors": e.errors})
+    ci = data.get("creditinvoice", data)
+    attachments = ci.get("Attachments", []) or []
+    return _result({"status": "success", "totalresults": len(attachments), "attachments": attachments})
+
+
 # --------------------------------------------------------------------------
 # Diagnostics
 # --------------------------------------------------------------------------

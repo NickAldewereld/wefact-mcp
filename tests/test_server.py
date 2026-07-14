@@ -159,3 +159,33 @@ async def test_mark_invoice_paid(endpoint: str) -> None:
     assert sent["InvoiceCode"] == "202401001"
     assert sent["PayDate"] == "2026-05-01"
     assert sent["PaymentMethod"] == "banktransfer"
+
+
+@respx.mock
+async def test_list_creditinvoice_attachments_returns_array(endpoint: str) -> None:
+    respx.post(endpoint).respond(
+        200,
+        json={
+            "status": "success",
+            "creditinvoice": {
+                "Identifier": "42",
+                "CreditInvoiceCode": "CI42",
+                "Attachments": [
+                    {"Identifier": "7", "Filename": "bon.pdf"},
+                    {"Identifier": "8", "Filename": "foto.jpg"},
+                ],
+            },
+        },
+    )
+    out = await _unwrap(server.list_creditinvoice_attachments)(identifier=42)
+    parsed = json.loads(out)
+    assert parsed["status"] == "success"
+    assert parsed["totalresults"] == 2
+    assert parsed["attachments"][0]["Filename"] == "bon.pdf"
+
+
+@respx.mock
+async def test_list_creditinvoice_attachments_requires_id(endpoint: str) -> None:
+    out = await _unwrap(server.list_creditinvoice_attachments)()
+    parsed = json.loads(out)
+    assert parsed["status"] == "error"
