@@ -235,3 +235,23 @@ async def test_download_attachment_sends_correct_params(endpoint: str) -> None:
     assert sent["Type"] == "creditinvoice"
     assert sent["Identifier"] == 7
     assert sent["CreditInvoiceCode"] == "CI42"
+
+
+@respx.mock
+async def test_update_credit_invoice_sends_edit(endpoint: str) -> None:
+    route = respx.post(endpoint).respond(200, json={"status": "success", "creditinvoice": {"Identifier": "42"}})
+    out = await _unwrap(server.update_credit_invoice)(
+        identifier=42, fields={"AmountExcl": "12.34", "Description": "Lunch"})
+    parsed = json.loads(out)
+    assert parsed["status"] == "success"
+    sent = json.loads(route.calls.last.request.content)
+    assert sent["controller"] == "creditinvoice"
+    assert sent["action"] == "edit"
+    assert sent["Identifier"] == 42
+    assert sent["AmountExcl"] == "12.34"
+
+
+@respx.mock
+async def test_update_credit_invoice_requires_id(endpoint: str) -> None:
+    out = await _unwrap(server.update_credit_invoice)(fields={"x": 1})
+    assert json.loads(out)["status"] == "error"

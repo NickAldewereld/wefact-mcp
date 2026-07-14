@@ -61,3 +61,6 @@ coverage.xml
 .env
 .env.*
 !.env.example
+
+# Superpowers scratch
+.superpowers/

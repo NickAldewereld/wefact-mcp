@@ -558,6 +558,34 @@ async def download_creditinvoice_attachment(
     return [Image(data=img, format=fmt) for img, fmt in images]
 
 
+@mcp.tool()
+async def update_credit_invoice(
+    identifier: int | None = None,
+    creditinvoice_code: str | None = None,
+    fields: dict[str, Any] | None = None,
+) -> str:
+    """Write corrected fields back to a credit invoice (purchase/expense).
+
+    Only call this AFTER a human has approved the extracted values — never
+    write financial data back automatically. Field names are WeFact field
+    names (see developer.wefact.com/creditinvoice).
+    """
+    if identifier is None and creditinvoice_code is None:
+        return _result({"status": "error", "errors": ["Provide identifier or creditinvoice_code."]})
+    if not fields:
+        return _result({"status": "error", "errors": ["Provide fields to update."]})
+    params: dict[str, Any] = dict(fields)
+    if identifier is not None:
+        params["Identifier"] = identifier
+    if creditinvoice_code is not None:
+        params["CreditInvoiceCode"] = creditinvoice_code
+    try:
+        data = await _get_client().request("creditinvoice", "edit", params)
+    except WeFactError as e:
+        return _result({"status": "error", "errors": e.errors})
+    return _result(data)
+
+
 # --------------------------------------------------------------------------
 # Diagnostics
 # --------------------------------------------------------------------------
