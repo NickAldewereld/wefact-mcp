@@ -52,6 +52,19 @@ Restart your MCP client and the WeFact tools should appear. Try:
 
 > Use the wefact-mcp `whoami` tool.
 
+### AI leest je bonnen
+
+WeFact's eigen veldherkenning op inkoopfacturen/bonnen mist soms een
+bedrag, datum of leverancier. Deze MCP server laat Claude de originele
+bonbestand met vision lezen en de ontbrekende velden voorstellen, zodat
+jij ze pas na jouw goedkeuring terugschrijft — nooit automatisch. De
+flow: (1) `list_creditinvoice_attachments` toont welke bonnen aan een
+inkoopfactuur hangen, (2) `download_creditinvoice_attachment` haalt het
+bestand op als beeld (PDF's worden automatisch per pagina naar PNG
+gerenderd), (3) Claude extraheert de velden uit het beeld, (4) jij
+keurt het voorstel goed, (5) `update_credit_invoice` schrijft de
+gecorrigeerde velden terug naar WeFact.
+
 ## Tools
 
 ### Generic escape hatch
@@ -80,7 +93,9 @@ Restart your MCP client and the WeFact tools should appear. Try:
 
 ### Credit invoices (inkoopfacturen)
 
-`list_credit_invoices`, `get_credit_invoice`
+`list_credit_invoices`, `get_credit_invoice`,
+`list_creditinvoice_attachments`, `download_creditinvoice_attachment`,
+`update_credit_invoice`
 
 ### Prompts
 
