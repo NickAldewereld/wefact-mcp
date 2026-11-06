@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_ENDPOINT = "https://api.mijnwefact.nl/v2/"
 DEFAULT_TIMEOUT = 30.0
-DEFAULT_USER_AGENT = "wefact-mcp/0.1.0 (+https://github.com/NickAldewereld/wefact-mcp)"
+DEFAULT_USER_AGENT = "wefact-mcp/0.1.1 (+https://github.com/NickAldewereld/wefact-mcp)"
 
 
 class WeFactError(Exception):

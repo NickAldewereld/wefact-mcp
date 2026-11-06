@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wefact-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server for WeFact — let Claude (Desktop, Code, Cursor) read and modify your WeFact administration via the v2 API."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -46,7 +46,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "mcp>=1.0",
+    "mcp>=1.0,<2",
     "httpx>=0.25",
 ]
 
