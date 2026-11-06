@@ -148,7 +148,7 @@ async def test_mark_invoice_paid(endpoint: str) -> None:
     out = await _unwrap(server.mark_invoice_paid)(
         invoice_code="202401001",
         pay_date="2026-05-01",
-        payment_method="banktransfer",
+        payment_method="wire",
     )
     parsed = json.loads(out)
     assert parsed["invoice"]["InvoiceCode"] == "202401001"
@@ -158,4 +158,4 @@ async def test_mark_invoice_paid(endpoint: str) -> None:
     assert sent["action"] == "markaspaid"
     assert sent["InvoiceCode"] == "202401001"
     assert sent["PayDate"] == "2026-05-01"
-    assert sent["PaymentMethod"] == "banktransfer"
+    assert sent["PaymentMethod"] == "wire"

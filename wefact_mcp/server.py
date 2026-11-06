@@ -337,7 +337,8 @@ async def mark_invoice_paid(
     Args:
         invoice_code: e.g. '202401001'.
         pay_date: ISO date. Defaults to today.
-        payment_method: e.g. 'cash', 'banktransfer', 'directdebit'.
+        payment_method: WeFact code, e.g. 'wire' for bank transfer
+            ('banktransfer' is rejected as an invalid payment method).
     """
     params: dict[str, Any] = {"InvoiceCode": invoice_code}
     if pay_date:
